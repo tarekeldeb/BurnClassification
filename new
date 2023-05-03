@@ -9,6 +9,13 @@ from keras.layers import Dropout, Flatten, Dense, GlobalAvgPool2D
 from keras.models import Model
 from keras.optimizers import Adam
 import scipy
+import numpy as np
+from keras.preprocessing import image
+from keras.utils import load_img
+import shutil
+from statistics import mean
+from os.path import exists
+import matplotlib.pyplot as plt
 
 imgWidth, imgHeight = 299, 299
 
@@ -66,8 +73,6 @@ history = model.fit(
     trainGenerator,
     steps_per_epoch=noTrainSamples // batchSize, epochs=epochs, validation_data=validationGenerator, validation_steps=noValidationSamples // batchSize)
 
-import matplotlib.pyplot as plt
-
 print(history.history.keys())
 
 plt.figure()
@@ -78,13 +83,6 @@ plt.plot(history.history['val_loss'], 'green', label='Validation Loss')
 plt.legend()
 plt.show()
 
-import numpy as np
-from keras.preprocessing import image
-from keras.utils import load_img
-import shutil
-from statistics import mean
-from os.path import exists
-
 # Calculate thresholds for different burn degrees
 arr_burn_degree_1 = []
 arr_burn_degree_2 = []
@@ -94,4 +92,5 @@ for x in range(1440):
     if exists(img_path):
         img = keras.utils.load_img(img_path, target_size=(imgWidth, imgHeight))
         img = keras.utils.img_to_array(img)
-        x = np.expand
+        x = np.expand_dims(img, axis=0)
+       

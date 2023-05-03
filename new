@@ -9,13 +9,12 @@ from keras.layers import Dropout, Flatten, Dense, GlobalAvgPool2D
 from keras.models import Model
 from keras.optimizers import Adam
 import scipy
+import matplotlib.pyplot as plt
 import numpy as np
 from keras.preprocessing import image
 from keras.utils import load_img
-import shutil
 from statistics import mean
 from os.path import exists
-import matplotlib.pyplot as plt
 
 imgWidth, imgHeight = 299, 299
 
@@ -83,14 +82,18 @@ plt.plot(history.history['val_loss'], 'green', label='Validation Loss')
 plt.legend()
 plt.show()
 
-# Calculate thresholds for different burn degrees
-arr_burn_degree_1 = []
-arr_burn_degree_2 = []
-arr_burn_degree_3 = []
+scores = []
+
 for x in range(1440):
-    img_path = f'./Dataset/TRAIN/Label 0/img{x}.jpg'
-    if exists(img_path):
-        img = keras.utils.load_img(img_path, target_size=(imgWidth, imgHeight))
+    if exists(f'./Dataset/TRAIN/Label 0/img{x}.jpg'):
+        img = keras.utils.load_img(r'./Dataset/TRAIN/Label 0/img'+str(x)+'.jpg', target_size=(imgWidth, imgHeight))
         img = keras.utils.img_to_array(img)
-        x = np.expand_dims(img, axis=0)
-       
+        x = np.expand_dims(img, axis=0) * 1. / 255
+        score = model.predict(x)
+        scores.append(score[0][0])
+    else:
+        print('does not exist')
+
+theMean = mean(scores)
+print('the threshold is ' + str(theMean))
+
